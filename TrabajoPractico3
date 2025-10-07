@@ -1,0 +1,172 @@
+using System.IO;
+using System.Collections.Generic;
+
+class tp2
+{
+    static void Main()
+    {
+        string rutaArchivo = @"..\..\..\f1_last5years.csv";
+
+        string[] lineas = File.ReadAllLines(rutaArchivo);
+
+        int filas = lineas.Length;
+
+        int cols = lineas[0].Split(',').Length;
+
+        string[,] datos = new string[filas, cols];
+
+        for (int i = 0; i < filas; i++)
+
+        {
+
+            string[] values = lineas[i].Split(',');
+
+            for (int j = 0; j < cols; j++)
+
+            {
+
+                datos[i, j] = values[j];
+
+            }
+            
+        }int num; 
+        do
+        {
+            Console.WriteLine("-----MENU FORMULA 1-----");
+            Console.WriteLine("1. Buscar podios de un piloto");
+            Console.WriteLine("2. Obtener datos de campeonato de un equipo de un año especifico");
+            Console.WriteLine("3. Remontada mas epica");
+            Console.WriteLine("4. Mostrar equipos ordenados");
+            Console.WriteLine("5. Mostrar todos los datos");
+            Console.WriteLine("6. Cerrar");
+            
+            num = int.Parse(Console.ReadLine());
+            if (num < 1 || num > 6)
+            {
+                Console.WriteLine("Ingrese un numero valido");
+                continue;
+            }
+            switch (num)
+            {
+                case 1:
+                    BuscarPodios(datos, filas); 
+                    break;
+                case 2:
+                    EquipoCampeonato(datos, filas);
+                    break;
+                case 3:
+                    remontadaEpica(datos, filas);
+                    break;
+                case 4:
+                    Equipos(datos, filas);
+                    break;
+                case 5:
+                    mostrarDatos(datos, filas, cols);
+                    break;
+                case 6:
+                    break;
+            }
+        } while (num != 6);
+    }
+    static void BuscarPodios(string[,] datos, int filas)
+    {
+        Console.WriteLine("Ingrese nombre/apellido del piloto");
+        string nombre = Console.ReadLine().ToLower();
+        int podios = 0;
+
+        for (int i = 0; i <filas; i++)
+        {
+            string piloto = datos[i, 2].ToLower();
+            int posFinal = int.Parse(datos[i, 5]);
+
+            if (piloto.Contains(nombre) && (posFinal == 1 || posFinal == 2 || posFinal == 3))
+            {
+                podios++;
+            }
+        }
+        Console.WriteLine("El piloto buscado tuvo " + podios + " podios");
+    }
+    static void EquipoCampeonato(string[,] datos, int filas)
+    {
+        Console.WriteLine("Ingrese el año");
+        string temporada = Console.ReadLine();
+        Console.WriteLine("Ingrese el equipo");
+        string equipo = Console.ReadLine().ToLower();
+        
+        double totalPuntos = 0;
+
+        Console.WriteLine("Resultados de " + equipo + " en la temporada " +  temporada);
+        for (int i = 0; i < filas; i++)
+        {
+            if (datos[i, 0] == temporada && datos[i, 1].ToLower() == equipo)
+            {
+                string piloto = datos[i, 2];
+                string carrera = datos[i, 3];
+                double puntos = double.Parse(datos[i, 6]);
+                totalPuntos += puntos;
+
+                Console.WriteLine(carrera + "-" + piloto + " obtuvo " + puntos + " puntos");
+                
+            }
+        }
+        Console.WriteLine("Numero total de puntos: " + totalPuntos);
+    } 
+    static void remontadaEpica(string[,] datos, int filas)
+    {
+        int remontadaEpica = int.MinValue;
+        string piloto = "";
+        string temporada = "";
+        string carrera = "";
+        string equipo = "";
+
+        for (int i = 0; i < filas; i++)
+        {
+            int clasificacion = int.Parse(datos[i, 4]);
+            int llegada = int.Parse((datos[i, 5]));
+            int remontada = clasificacion - llegada;
+
+        if (remontada > remontadaEpica)
+            {
+                remontadaEpica = remontada;
+                piloto = datos[i, 2];
+                temporada = datos[i, 0];
+                carrera = datos[i, 3];
+                equipo = datos[i, 1];
+            }
+        }
+        Console.WriteLine("La mejor remontada fue de " + piloto + " en " + temporada + ", " + carrera + " con " + equipo + " recuperando " + remontadaEpica + " posiciones");
+    }
+    static void Equipos(string[,]datos , int filas)
+    {
+        List<string> equipos = new List<string>();
+
+        for (int i = 0; i < filas; i++)
+        {
+            string equipo = datos[i, 1];
+            if (!equipos.Contains(equipo))
+            {
+                equipos.Add(equipo);
+            }
+        }
+        equipos.Sort();
+
+        Console.WriteLine("Equipos de formula 1 (orden alfabetico)");
+        foreach (string e in equipos)
+        {
+            Console.WriteLine(e);
+        }
+    }
+    static void mostrarDatos(string[,] datos, int filas, int cols)
+    {
+        Console.WriteLine("Todos los datos");
+
+        for(int i = 0; i < filas; i++)
+        {
+            for(int j = 0;  j < cols; j++)
+            {
+                Console.WriteLine(datos[i, j]);
+            }
+            Console.WriteLine();
+        }
+    }
+}
